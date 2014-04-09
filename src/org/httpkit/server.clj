@@ -131,16 +131,18 @@
     (on-close [ch callback])
 
   See org.httpkit.timer ns for optional timeout facilities."
-  [request ch-name & body]
-  `(let [~ch-name (:async-channel ~request)]
+  [request ch-name handshake & body]
+  `(let [~ch-name (:async-channel ~request)
+         ~handshake #(throw (Exception. "No handler defined"))]
      (if (:websocket? ~request)
        (if-let [key# (get-in ~request [:headers "sec-websocket-key"])]
-         (do (.sendHandshake ~(with-meta ch-name {:tag `AsyncChannel})
-                             {"Upgrade"    "websocket"
-                              "Connection" "Upgrade"
-                              "Sec-WebSocket-Accept" (accept key#)})
-             ~@body
-             {:body ~ch-name})
+         (let [~handshake #(.sendHandshake 
+                            ~(with-meta ch-name {:tag `AsyncChannel})
+                            {"Upgrade"    "websocket"
+                             "Connection" "Upgrade"
+                             "Sec-WebSocket-Accept" (accept key#)})]
+           ~@body
+           {:body ~ch-name})
          {:status 400 :body "Bad Sec-WebSocket-Key header"})
        (do ~@body
            {:body ~ch-name}))))
