@@ -133,7 +133,7 @@
   See org.httpkit.timer ns for optional timeout facilities."
   [request ch-name handshake & body]
   `(let [~ch-name (:async-channel ~request)
-         ~handshake #(throw (Exception. "No handler defined"))]
+         ~handshake #(throw (Exception. "No handshake for non-websocket"))]
      (if (:websocket? ~request)
        (if-let [key# (get-in ~request [:headers "sec-websocket-key"])]
          (let [~handshake #(.sendHandshake 
