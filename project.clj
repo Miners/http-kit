@@ -9,6 +9,7 @@
   :test-paths ["test"]
   :jar-exclusions [#".*java$"]
   :plugins [[lein-swank "1.4.4"]]
+  :local-repo "m2"
   :test-selectors {:default (complement :benchmark)
                    :benchmark :benchmark
                    :all (fn [_] true)}
