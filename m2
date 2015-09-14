@@ -1,1 +1,1 @@
-/mnt/m2
+/mnt/minus/m2
